@@ -1,6 +1,6 @@
 from enum import Enum, auto
-class IdType(Enum):
-    CEDULA = auto()
-    PASAPORTE = auto()
-    NIT= auto()
-    EXTRAJERIA = auto()
+class IdType(str, Enum):
+    CEDULA = "CEDULA"
+    PASAPORTE = "PASAPORTE"
+    NIT = "NIT"
+    EXTRAJERIA = "EXTRAJERIA"
