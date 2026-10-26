@@ -15,4 +15,3 @@ class updatefood(FoodBase):
 
 class food(FoodBase):
     model_config = ConfigDict(from_attributes=True)
-    id: str
