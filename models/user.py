@@ -14,6 +14,7 @@ class userbase(BaseModel):
 
 
 class createuser(BaseModel):
+    id : int
     id_type: IdType
     id_number: str
     name: str
