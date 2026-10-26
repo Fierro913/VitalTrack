@@ -58,7 +58,7 @@ def update_user(user_id: str, new_user: updateuser):
     else:
         for user in users_list:
             if user.id == user_id:
-                user.first_name = new_user.first_name
+                user.name = new_user.name
                 return user
         return None
 
