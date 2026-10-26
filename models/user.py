@@ -14,7 +14,6 @@ class userbase(BaseModel):
 
 
 class createuser(BaseModel):
-    id : int
     id_type: IdType
     id_number: str
     name: str
@@ -22,14 +21,8 @@ class createuser(BaseModel):
     diabetes_type: DiabetesType
 
 
-class updateuser(BaseModel):
-    id_type: IdType
-    id_number: str
-    name: str
-    email: EmailStr
-    diabetes_type: DiabetesType
+class updateuser(createuser):
+    pass
 
 
-class userID(userbase):
-    id: Optional[int]
 
