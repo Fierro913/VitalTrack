@@ -22,7 +22,11 @@ class createuser(BaseModel):
 
 
 class updateuser(createuser):
-    pass
+    id_type: IdType
+    id_number: str
+    name: str
+    email: EmailStr
+    diabetes_type: DiabetesType
 
 
 
