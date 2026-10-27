@@ -1,0 +1,61 @@
+import csv
+from pathlib import Path
+from models.glucose_register import register, createRegister, UpdateRegister
+
+DATA_BASE = Path(__file__).resolve().parent.parent / "glucose_register.csv"
+FIELDS = ["id", "user_id", "date", "glucose_mg_dl", "moment", "comida_id", "notes"]
+
+
+def initialize_csv():
+    if not DATA_BASE.exists():
+        with DATA_BASE.open("w", newline="", encoding="utf-8") as file:
+            csv.DictWriter(file, fieldnames=FIELDS).writeheader()
+
+
+def get_registers() -> list[register]:
+    initialize_csv()
+    with DATA_BASE.open("r", newline="", encoding="utf-8") as file:
+        return [register.model_validate(row) for row in csv.DictReader(file)]
+
+
+def get_register(register_id: str) -> register | None:
+    return next((r for r in get_registers() if r.id == register_id), None)
+
+
+def create_register(new_register: createRegister) -> register:
+    initialize_csv()
+    data = new_register.model_dump(mode="json")
+    data["id"] = str(len(get_registers()) + 1)
+    with DATA_BASE.open("a", newline="", encoding="utf-8") as file:
+        csv.DictWriter(file, fieldnames=FIELDS).writerow(data)
+    return register.model_validate(data)
+
+
+def save_registers(registers: list[register]):
+    initialize_csv()
+    with DATA_BASE.open("w", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=FIELDS)
+        writer.writeheader()
+        for r in registers:
+            writer.writerow(r.model_dump(mode="json"))
+
+
+def update_register(register_id: str, data: UpdateRegister) -> register | None:
+    registers = get_registers()
+    for i, current in enumerate(registers):
+        if current.id == register_id:
+            updated = data.model_dump(mode="json")
+            updated["id"] = register_id
+            registers[i] = register.model_validate(updated)
+            save_registers(registers)
+            return registers[i]
+    return None
+
+
+def delete_register(register_id: str) -> bool:
+    registers = get_registers()
+    filtered = [r for r in registers if r.id != register_id]
+    if len(filtered) == len(registers):
+        return False
+    save_registers(filtered)
+    return True
