@@ -1,5 +1,4 @@
 import csv
-import uuid
 from pathlib import Path
 from models.user import userbase, createuser, updateuser
 
@@ -24,7 +23,7 @@ def get_user(user_id: str) -> userbase | None:
 def create_user(new_user: createuser) -> userbase:
     initialize_csv()
     data = new_user.model_dump(mode="json")
-    data["id"] = str(uuid.uuid4())
+    data["id"] = str(len(get_users()) + 1)
     with DATA_BASE.open("a", newline="", encoding="utf-8") as file:
         csv.DictWriter(file, fieldnames=FIELDS).writerow(data)
     return userbase.model_validate(data)
