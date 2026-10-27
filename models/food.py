@@ -14,4 +14,4 @@ class updatefood(FoodBase):
     carbs_g:float
 
 class food(FoodBase):
-    model_config = ConfigDict(from_attributes=True)
+    id:str
