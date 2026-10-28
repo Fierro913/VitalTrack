@@ -44,8 +44,8 @@ def update_user(user_id: str, data: updateuser) -> userbase | None:
     for i, current in enumerate(users):
         if current.id == user_id:
             updated = data.model_dump(mode="json")
-            updated["id"] = user_id
-            updated["status"] = current.status
+            data["id"] = str(len(get_users()) + 1)
+            data["status"] = "active"
             users[i] = userbase.model_validate(updated)
             save_users(users)
             return users[i]
@@ -54,8 +54,9 @@ def update_user(user_id: str, data: updateuser) -> userbase | None:
 
 def delete_user(user_id: str) -> bool:
     users = get_users()
-    filtered = [user for user in users if user.id != user_id]
-    if len(filtered) == len(users):
-        return False
-    save_users(filtered)
-    return True
+    for user in users:
+        if user.id == user_id:
+            user.status = "inactive"
+            save_users(users)
+            return True
+    return False
