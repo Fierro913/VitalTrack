@@ -1,18 +1,20 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, Field
+
 
 class FoodBase(BaseModel):
-    user_id:str
-    name:str
-    carbs_g:float
+    user_id: str
+    name: str = Field(min_length=1)
+    carbs_g: float = Field(ge=0)
 
-class createfood(FoodBase):
+
+class CreateFood(FoodBase):
     pass
 
-class updatefood(FoodBase):
-    user_id:str
-    name:str
-    carbs_g:float
 
-class food(FoodBase):
-    id:str
+class UpdateFood(FoodBase):
+    pass
+
+
+class Food(FoodBase):
+    id: str
     status: str = "active"
