@@ -11,6 +11,7 @@ class userbase(BaseModel):
     name: str
     email: EmailStr
     diabetes_type: DiabetesType
+    status: str = "active"
 
 
 class createuser(BaseModel):

@@ -24,3 +24,4 @@ class UpdateRegister(RegisterBase):
 class register(RegisterBase):
     model_config = ConfigDict(from_attributes=True)
     id:str
+    status: str = "active"

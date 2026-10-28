@@ -15,3 +15,4 @@ class updatefood(FoodBase):
 
 class food(FoodBase):
     id:str
+    status: str = "active"
