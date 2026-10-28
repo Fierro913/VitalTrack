@@ -44,8 +44,8 @@ def update_user(user_id: str, data: updateuser) -> userbase | None:
     for i, current in enumerate(users):
         if current.id == user_id:
             updated = data.model_dump(mode="json")
-            data["id"] = str(len(get_users()) + 1)
-            data["status"] = "active"
+            updated["id"] = user_id
+            updated["status"] = current.status
             users[i] = userbase.model_validate(updated)
             save_users(users)
             return users[i]
