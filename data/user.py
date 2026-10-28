@@ -3,7 +3,7 @@ from pathlib import Path
 from models.user import userbase, createuser, updateuser
 
 DATA_BASE = Path(__file__).resolve().parent.parent / "user.csv"
-FIELDS = ["id", "id_type", "id_number", "name", "email", "diabetes_type"]
+FIELDS = ["id", "id_type", "id_number", "name", "email", "diabetes_type", "status"]
 
 def initialize_csv():
     if not DATA_BASE.exists():
@@ -24,6 +24,7 @@ def create_user(new_user: createuser) -> userbase:
     initialize_csv()
     data = new_user.model_dump(mode="json")
     data["id"] = str(len(get_users()) + 1)
+    data["status"] = "active"
     with DATA_BASE.open("a", newline="", encoding="utf-8") as file:
         csv.DictWriter(file, fieldnames=FIELDS).writerow(data)
     return userbase.model_validate(data)
@@ -44,6 +45,7 @@ def update_user(user_id: str, data: updateuser) -> userbase | None:
         if current.id == user_id:
             updated = data.model_dump(mode="json")
             updated["id"] = user_id
+            updated["status"] = current.status
             users[i] = userbase.model_validate(updated)
             save_users(users)
             return users[i]
