@@ -3,7 +3,7 @@ from pathlib import Path
 from models.glucose_register import register, createRegister, UpdateRegister
 
 DATA_BASE = Path(__file__).resolve().parent.parent / "glucose_register.csv"
-FIELDS = ["id", "user_id", "date", "glucose_mg_dl", "moment", "comida_id", "notes"]
+FIELDS = ["id", "user_id", "date", "glucose_mg_dl", "moment", "comida_id", "notes", "status"]
 
 
 def initialize_csv():
@@ -26,6 +26,7 @@ def create_register(new_register: createRegister) -> register:
     initialize_csv()
     data = new_register.model_dump(mode="json")
     data["id"] = str(len(get_registers()) + 1)
+    data["status"] = "active"
     with DATA_BASE.open("a", newline="", encoding="utf-8") as file:
         csv.DictWriter(file, fieldnames=FIELDS).writerow(data)
     return register.model_validate(data)
@@ -46,6 +47,7 @@ def update_register(register_id: str, data: UpdateRegister) -> register | None:
         if current.id == register_id:
             updated = data.model_dump(mode="json")
             updated["id"] = register_id
+            updated["status"] = current.status
             registers[i] = register.model_validate(updated)
             save_registers(registers)
             return registers[i]
@@ -54,8 +56,9 @@ def update_register(register_id: str, data: UpdateRegister) -> register | None:
 
 def delete_register(register_id: str) -> bool:
     registers = get_registers()
-    filtered = [r for r in registers if r.id != register_id]
-    if len(filtered) == len(registers):
-        return False
-    save_registers(filtered)
-    return True
+    for r in registers:
+        if r.id == register_id:
+            r.status = "inactive"
+            save_registers(registers)
+            return True
+    return False
