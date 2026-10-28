@@ -1,7 +1,6 @@
 from fastapi import APIRouter, status, HTTPException
 from models.food import food, createfood, updatefood
-from data.food import create_food, get_foods, get_food, update_food, delete_food
-
+from data.food import create_food, get_foods, get_foods_by_user, update_food, delete_food
 router = APIRouter()
 
 
@@ -18,12 +17,12 @@ def show_all_foods():
     return foods
 
 
-@router.get("/{food_id}", status_code=status.HTTP_200_OK, response_model=food)
-def show_one_food(food_id: str):
-    found = get_food(food_id)
-    if found is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Food not found")
-    return found
+@router.get("/{user_id}", status_code=status.HTTP_200_OK, response_model=list[food])
+def show_foods_by_user(user_id: str):
+    foods = get_foods_by_user(user_id)
+    if not foods:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No foods found for this user")
+    return foods
 
 
 @router.patch("/{food_id}", status_code=status.HTTP_200_OK, response_model=food)
