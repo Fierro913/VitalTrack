@@ -1,4 +1,6 @@
-from enum import Enum, auto
+from enum import Enum
+
+
 class IdType(str, Enum):
     CEDULA = "CEDULA"
     PASAPORTE = "PASAPORTE"
