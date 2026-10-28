@@ -3,7 +3,7 @@ from pathlib import Path
 from models.food import food, createfood, updatefood
 
 DATA_BASE = Path(__file__).resolve().parent.parent / "food.csv"
-FIELDS = ["id", "user_id", "name", "carbs_g"]
+FIELDS = ["id", "user_id", "name", "carbs_g", "status"]
 
 
 def initialize_csv():
@@ -18,14 +18,15 @@ def get_foods() -> list[food]:
         return [food.model_validate(row) for row in csv.DictReader(file)]
 
 
-def get_food(food_id: str) -> food | None:
-    return next((f for f in get_foods() if f.id == food_id), None)
+def get_foods_by_user(user_id: str) -> list[food]:
+    return [f for f in get_foods() if f.user_id == user_id]
 
 
 def create_food(new_food: createfood) -> food:
     initialize_csv()
     data = new_food.model_dump(mode="json")
     data["id"] = str(len(get_foods()) + 1)
+    data["status"] = "active"
     with DATA_BASE.open("a", newline="", encoding="utf-8") as file:
         csv.DictWriter(file, fieldnames=FIELDS).writerow(data)
     return food.model_validate(data)
@@ -46,6 +47,7 @@ def update_food(food_id: str, data: updatefood) -> food | None:
         if current.id == food_id:
             updated = data.model_dump(mode="json")
             updated["id"] = food_id
+            updated["status"] = current.status
             foods[i] = food.model_validate(updated)
             save_foods(foods)
             return foods[i]
@@ -54,8 +56,9 @@ def update_food(food_id: str, data: updatefood) -> food | None:
 
 def delete_food(food_id: str) -> bool:
     foods = get_foods()
-    filtered = [f for f in foods if f.id != food_id]
-    if len(filtered) == len(foods):
-        return False
-    save_foods(filtered)
-    return True
+    for f in foods:
+        if f.id == food_id:
+            f.status = "inactive"
+            save_foods(foods)
+            return True
+    return False
